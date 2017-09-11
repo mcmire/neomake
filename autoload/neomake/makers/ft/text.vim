@@ -29,55 +29,55 @@ function! neomake#makers#ft#text#writegood() abort
 endfunction
 
 function! neomake#makers#ft#text#GetEntriesForOutput_Redpen(context) abort
-  if a:context.source ==# 'stderr'
-    return []
-  endif
-  let output = neomake#utils#JSONdecode(join(a:context.output, ''))
-  call neomake#utils#DebugObject('context', a:context)
-  if !len(output)
-    return []
-  endif
+    if a:context.source ==# 'stderr'
+        return []
+    endif
+    let output = neomake#utils#JSONdecode(join(a:context.output, ''))
+    call neomake#utils#DebugObject('context', a:context)
+    if !len(output)
+        return []
+    endif
 
-  " Input is a list from CLI, but just a dict via curl/redpen-server.
-  if type(output) == type([])
-    let result = output[0]
-  else
-    let result = output
-  endif
+    " Input is a list from CLI, but just a dict via curl/redpen-server.
+    if type(output) == type([])
+        let result = output[0]
+    else
+        let result = output
+    endif
 
-  let entries = []
-  " for o in output
+    let entries = []
+    " for o in output
     for error in get(result, 'errors', [])
-      let type = 'E'
-      let text = get(error, 'message')
-      let validator = get(error, 'validator')
-      echom string(['V', string(validator)])
-      if len(validator)
-        let text .= ' ['.validator.']'
+        let type = 'E'
+        let text = get(error, 'message')
+        let validator = get(error, 'validator')
+        echom string(['V', string(validator)])
+        if len(validator)
+            let text .= ' ['.validator.']'
 
-        if validator ==# 'Spelling'
-          let type = 'W'
+            if validator ==# 'Spelling'
+                let type = 'W'
+            endif
         endif
-      endif
 
-      let entry = {
-            \ 'text': text,
-            \ 'lnum': get(error, 'lineNum', 0),
-            \ 'type': type,
-            \ }
+        let entry = {
+                    \ 'text': text,
+                    \ 'lnum': get(error, 'lineNum', 0),
+                    \ 'type': type,
+                    \ }
 
-      if has_key(get(error, 'startPosition', {}), 'offset')
-        let entry.col = error.startPosition.offset + 1
-        if has_key(get(error, 'endPosition', {}), 'offset')
-          let entry.length = error.endPosition.offset - entry.col + 1
-          echom string([entry.text, entry.length])
+        if has_key(get(error, 'startPosition', {}), 'offset')
+            let entry.col = error.startPosition.offset + 1
+            if has_key(get(error, 'endPosition', {}), 'offset')
+                let entry.length = error.endPosition.offset - entry.col + 1
+                echom string([entry.text, entry.length])
+            endif
         endif
-      endif
 
-      call add(entries, entry)
+        call add(entries, entry)
     endfor
-  " endfor
-  return entries
+    " endfor
+    return entries
 endfunction
 
 function! neomake#makers#ft#text#redpen() abort
