@@ -87,7 +87,9 @@ function! neomake#makers#ft#text#redpen() abort
 endfunction
 
 function! s:redpen_curl_cb(jobinfo) abort dict
-    let format = index(self.fts, 'markdown') != 1 ? 'MARKDOWN' : 'PLAIN'  " would also have WIKI
+    " TODO: is fts available already?!
+    let format = index(split(a:jobinfo.ft, '\.'), 'markdown') != 1 ? 'MARKDOWN' : 'PLAIN'  " would also have WIKI
+    " XXX: update method to get filename!
     let self.args = ['-s', '--data-urlencode',
                 \ printf('document@%s', fnameescape(neomake#utils#get_fname_for_buffer(a:jobinfo))),
                 \ printf('format=%s', format),
