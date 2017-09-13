@@ -62,6 +62,7 @@ function! neomake#makers#ft#text#GetEntriesForOutput_Redpen(context) abort
                     \ 'text': text,
                     \ 'lnum': get(error, 'lineNum', 0),
                     \ 'type': type,
+                    \ 'bufnr': a:context.jobinfo.bufnr,
                     \ }
 
         if has_key(get(error, 'startPosition', {}), 'offset')
