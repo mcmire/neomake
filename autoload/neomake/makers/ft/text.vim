@@ -51,10 +51,8 @@ function! neomake#makers#ft#text#GetEntriesForOutput_Redpen(context) abort
         let type = 'E'
         let text = get(error, 'message')
         let validator = get(error, 'validator')
-        echom string(['V', string(validator)])
         if len(validator)
             let text .= ' ['.validator.']'
-
             if validator ==# 'Spelling'
                 let type = 'W'
             endif
@@ -70,7 +68,6 @@ function! neomake#makers#ft#text#GetEntriesForOutput_Redpen(context) abort
             let entry.col = error.startPosition.offset + 1
             if has_key(get(error, 'endPosition', {}), 'offset')
                 let entry.length = error.endPosition.offset - entry.col + 1
-                echom string([entry.text, entry.length])
             endif
         endif
 
