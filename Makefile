@@ -120,7 +120,14 @@ $(_TESTS_REL_AND_ABS):
 testcoverage:
 	@set -x; ret=0; \
 	cov_dir=$(NEOMAKE_TEST_PROFILE_DIR); \
-	if [ -z "$$cov_dir" ]; then cov_dir=$$(mktemp -d); fi; \
+	if [ -z "$$cov_dir" ]; then \
+	  cov_dir=build/coverage; \
+	  if [ -d "$$cov_dir" ]; then \
+	    $(RM) -r $$cov_dir; \
+	  else \
+	    mkdir -p $$cov_dir; \
+	  fi; \
+	fi; \
 	for testfile in tests/main.vader $(wildcard tests/isolated/*vader); do \
 	  make test VADER_ARGS=$$testfile \
 	    NEOMAKE_COVERAGE_FILE=$$cov_dir/$$(basename $$testfile).profile || (( ++ret )); \
@@ -314,6 +321,12 @@ check:
 	echo '== Running custom checks'; \
 	contrib/vim-checks $(LINT_ARGS) || (( ret+= 16 )); \
 	exit $$ret
+
+build/coverage: testcoverage
+.coverage: build/coverage
+	covimerage write_coverage $?/*.profile
+coverage: .coverage
+	coverage report -m --skip-covered
 
 .PHONY: vint vint-errors vimlint vimlint-errors
 .PHONY: test testnvim testvim testnvim_interactive testvim_interactive
