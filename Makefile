@@ -322,7 +322,8 @@ check:
 	contrib/vim-checks $(LINT_ARGS) || (( ret+= 16 )); \
 	exit $$ret
 
-build/coverage: testcoverage
+build/coverage: $(shell find . -name '*.vim')
+	$(MAKE) testcoverage
 .coverage: build/coverage
 	covimerage write_coverage $?/*.profile
 coverage: .coverage
